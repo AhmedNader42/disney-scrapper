@@ -14,6 +14,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.get("/", (req, res, next) => {
+    console.log("GET /");
     listProducts()
         .then((response) => {
             let $ = cheerio.load(response.data);
@@ -39,7 +40,6 @@ app.get("/", (req, res, next) => {
                 }
             });
             let p = path.join(__dirname, "public/templates/list.ejs");
-            console.log(p);
             res.render(p, { products: products, bagCount: app.settings.numberOfItems });
         })
         .catch(function (e) {
