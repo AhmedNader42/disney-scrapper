@@ -1,4 +1,3 @@
-const cheerio = require("cheerio");
 var { cookieJar, axios } = require("./request");
 var qs = require("qs");
 
@@ -29,8 +28,8 @@ function postToCart(productID, csrf) {
     const post_addToCartConfig = {
         method: "post",
         url: "https://www.shopdisney.co.uk/on/demandware.store/Sites-disneyuk-Site/en_GB/Cart-AddProduct",
-        jar: cookieJar, // tough.CookieJar or boolean
-        withCredentials: true, // If true, send cookie stored in jar
+        jar: cookieJar,
+        withCredentials: true,
         headers: {
             "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
             DNT: "1",

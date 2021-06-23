@@ -78,5 +78,5 @@ app.get("/bag", (req, res, next) => {
 
 const port = process.env.PORT || 8000;
 app.listen(port, () => {
-    console.log(`Listening on port ${port}`);
+    console.log(`Server up on http://localhost:${port}`);
 });
