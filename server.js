@@ -18,7 +18,7 @@ app.get("/", (req, res, next) => {
     listProducts()
         .then((response) => {
             let $ = cheerio.load(response.data);
-
+            console.log(response.data);
             $("input[class=csrftoken]").each(function (i, e) {
                 let csrf = $(e).attr("value");
                 app.set("csrf_token", csrf);
