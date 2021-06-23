@@ -11,12 +11,12 @@
 
 <body>
     <form action="/bag" method="get">
-        <input type="submit" value="Bag" />
+        <input type="submit" value="Bag(<%= bagCount %>)" />
     </form>
 
     <div class="products-container">
 
-        <% products.reverse().forEach(function(product){ %>
+        <% products.forEach(function(product){ %>
             <div class="card product-item">
                 <img src="<%= product.imageURL %>" style="width:100%" />
                 <h1>

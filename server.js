@@ -7,6 +7,7 @@ const app = express();
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
+app.set("numberOfItems", 0);
 
 app.use(express.static("public"));
 app.use(express.json());
@@ -37,7 +38,9 @@ app.get("/", (req, res, next) => {
                     products.push(product);
                 }
             });
-            res.render(path.join(__dirname, "public/templates/list.ejs"), { products: products });
+            let p = path.join(__dirname, "public/templates/list.ejs");
+            console.log(p);
+            res.render(p, { products: products, bagCount: app.settings.numberOfItems });
         })
         .catch(function (e) {
             console.log(e);
@@ -51,8 +54,10 @@ app.post("/add", (req, res, next) => {
     const token = app.settings.csrf_token;
     postToCart(productID, token)
         .then(function (response) {
+            app.set("numberOfItems", app.settings.numberOfItems + 1);
+            res.redirect("/");
             res.json({ Message: "Success" });
-            console.log(response.data);
+            // console.log(response.data);
         })
         .catch(function (error) {
             console.log(error);
@@ -70,7 +75,8 @@ app.get("/bag", (req, res, next) => {
             console.log(links);
             numberOfItems = links;
         });
-        res.json({ Number: numberOfItems });
+        res.end(response.data);
+        // res.json({ Number: numberOfItems });
     });
 });
 
