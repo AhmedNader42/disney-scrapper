@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <form action="/bag" method="get">
+        <input type="submit" value="Bag" />
+    </form>
+
+    <div class="products-container">
+
+        <% products.reverse().forEach(function(product){ %>
+            <div class="card product-item">
+                <img src="<%= product.imageURL %>" style="width:100%" />
+                <h1>
+                    <%= product.title %>
+                </h1>
+                <a href="<%= product.URL %>"> Product Page </a>
+                <form action="/add" method="post">
+                    <p class="price">
+                        <input hidden type="text" name="product_id" value="<%=product.productId %>">
+                    </p>
+                    <button type="submit"><a href="<%= product.URL %>"></a> Add to Cart</button>
+                </form>
+            </div>
+            <% }) %>
+    </div>
+</body>
+
+</html>

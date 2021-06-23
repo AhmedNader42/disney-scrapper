@@ -2,47 +2,31 @@ const cheerio = require("cheerio");
 var { cookieJar, axios } = require("./request");
 var qs = require("qs");
 
-let csrf = "undefined";
+function listProducts() {
+    var get_listProductsConfig = {
+        method: "get",
+        url: "https://www.shopdisney.co.uk/disney/movies/disney-princess",
+        headers: {
+            Accept: "*/*",
+            "Accept-Encoding": "gzip, deflate, br",
+        },
+        jar: cookieJar,
+        withCredentials: true,
+    };
 
-var get_listProductsConfig = {
-    method: "get",
-    url: "https://www.shopdisney.co.uk/disney-store-disney-princess-costume-collection-for-kids-2841047080168M.html",
-    headers: {
-        Accept: "*/*",
-        "Accept-Encoding": "gzip, deflate, br",
-        // Connection: "keep-alive",
-    },
-    jar: cookieJar,
-    withCredentials: true,
-};
+    return axios(get_listProductsConfig);
+}
 
-axios(get_listProductsConfig)
-    .then((response) => {
-        let $ = cheerio.load(response.data);
-
-        $("input[class=csrftoken]").each(function (i, e) {
-            let links = $(e).attr("value");
-            csrf = links;
-            console.log(csrf);
-        });
-
-        postToCart();
-    })
-    .catch(function (e) {
-        console.log(e);
-    });
-
-let i = 0;
-function postToCart() {
+function postToCart(productID, csrf) {
     console.log(csrf);
     var data = qs.stringify({
         Quantity: "1",
         csrf_token: String(csrf),
         format: "ajax",
-        pid: "428421122338",
+        pid: productID,
     });
 
-    var post_addToCartConfig = {
+    const post_addToCartConfig = {
         method: "post",
         url: "https://www.shopdisney.co.uk/on/demandware.store/Sites-disneyuk-Site/en_GB/Cart-AddProduct",
         jar: cookieJar, // tough.CookieJar or boolean
@@ -59,20 +43,7 @@ function postToCart() {
         data: data,
     };
 
-    axios(post_addToCartConfig)
-        .then(function (response) {
-            console.log(response.data);
-            if (i < 2) {
-                postToCart();
-                i++;
-            } else {
-                goToBag();
-            }
-            // goToBag();
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
+    return axios(post_addToCartConfig);
 }
 
 function goToBag() {
@@ -90,12 +61,11 @@ function goToBag() {
             Accept: `text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9`,
         },
     };
-    axios(get_bagConfig).then((response) => {
-        // console.log(response);
-        let $ = cheerio.load(response.data);
-        $("span[class=bag-count]").each(function (i, e) {
-            let links = $(e).text();
-            console.log(links);
-        });
-    });
+    return axios(get_bagConfig);
 }
+
+module.exports = {
+    listProducts,
+    postToCart,
+    goToBag,
+};
