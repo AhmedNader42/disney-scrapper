@@ -1,7 +1,7 @@
 const express = require("express");
 const cheerio = require("cheerio");
 const path = require("path");
-const { listProducts, postToCart, goToBag } = require("./home");
+const { listProducts, postToCart, goToBag } = require("./endpoints");
 
 const app = express();
 
@@ -14,11 +14,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.get("/", (req, res, next) => {
-    console.log("GET /");
     listProducts()
         .then((response) => {
             let $ = cheerio.load(response.data);
-            console.log(response.data);
+
             $("input[class=csrftoken]").each(function (i, e) {
                 let csrf = $(e).attr("value");
                 app.set("csrf_token", csrf);
@@ -34,7 +33,7 @@ app.get("/", (req, res, next) => {
                     URL: $(e).attr("href"),
                     imageURL: $(e).find("div > picture > img").attr("data-src"),
                 };
-                console.log(product);
+                // console.log(product);
                 if (product.imageURL != undefined) {
                     products.push(product);
                 }
@@ -49,15 +48,14 @@ app.get("/", (req, res, next) => {
 });
 
 app.post("/add", (req, res, next) => {
-    console.log(req.body);
     const productID = req.body.product_id;
     const token = app.settings.csrf_token;
+
     postToCart(productID, token)
         .then(function (response) {
             app.set("numberOfItems", app.settings.numberOfItems + 1);
             res.redirect("/");
             res.json({ Message: "Success" });
-            // console.log(response.data);
         })
         .catch(function (error) {
             console.log(error);
@@ -67,7 +65,6 @@ app.post("/add", (req, res, next) => {
 
 app.get("/bag", (req, res, next) => {
     goToBag().then((response) => {
-        // console.log(response);
         let $ = cheerio.load(response.data);
         let numberOfItems = 0;
         $("span[class=bag-count]").each(function (i, e) {
@@ -76,7 +73,6 @@ app.get("/bag", (req, res, next) => {
             numberOfItems = links;
         });
         res.end(response.data);
-        // res.json({ Number: numberOfItems });
     });
 });
 
